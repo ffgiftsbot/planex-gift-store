@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0e14">
+  <title>PLANEX GIFT STORE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">☰</button>
+    <div class="brand">
+      <div class="brand-name">PLANEX GIFT STORE</div>
+      <div class="tagline">GET GIFTS INSTANTLY — YOUR GAMING STORE</div>
+    </div>
+    <button class="icon-btn cart-icon" id="cartBtn" aria-label="Cart">🛒<span id="cartCount">0</span></button>
+  </header>
+
+  <main class="page">
+    <section class="uid-area">
+      <div class="uid-box">
+        <span class="user-symbol">♙</span>
+        <input id="playerUid" inputmode="numeric" placeholder="Enter Player UID" maxlength="20">
+        <button class="lookup-btn" id="lookupBtn">Lookup</button>
+      </div>
+      <p class="hint" id="uidHint">BD server only — enter your <b>Player ID</b> to continue.</p>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <h1>Likes &amp; Diamonds</h1>
+        <p>BD server · quick delivery</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-art likes-art"><div class="art-circle">👍</div><div class="art-label">✦ +200 ✦</div></div>
+          <h3>200 Likes</h3><p>Profile likes · per day</p>
+          <button class="outline-btn" data-action="subscribe" data-name="200 Likes" data-price="25">Subscribe</button>
+        </article>
+        <article class="feature-card">
+          <div class="feature-art diamond-art"><div class="art-circle">💎</div><div class="art-label">DIAMOND</div></div>
+          <h3>Diamond TopUp</h3><p>Diamonds · membership · level up</p>
+          <button class="outline-btn" data-action="scroll" data-target="giftStore">Buy now</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="primeStore">
+      <div class="section-heading">
+        <h1>Prime Store</h1>
+        <p>Featured gifts · limited stock</p>
+      </div>
+      <div class="product-grid" id="primeGrid"></div>
+    </section>
+
+    <section class="panel" id="giftStore">
+      <div class="section-heading"><h1>Gift Store</h1><p>Browse available bundles and gifts</p></div>
+      <div class="search-box"><span>⌕</span><input id="searchInput" placeholder="Search items..."></div>
+      <div class="tabs" id="genderTabs">
+        <button class="active" data-gender="All">All</button>
+        <button data-gender="Male">Male</button>
+        <button data-gender="Female">Female</button>
+      </div>
+      <div class="filters">
+        <select id="categoryFilter"><option value="All">All categories</option><option>Bundle</option><option>Emote</option><option>Special</option></select>
+        <select id="sortFilter"><option value="low">Price: Low → High</option><option value="high">Price: High → Low</option><option value="name">Name: A → Z</option></select>
+      </div>
+      <div class="product-grid" id="giftGrid"></div>
+      <p class="empty hidden" id="emptyState">No gifts found. Try another search or category.</p>
+    </section>
+
+    <section class="panel info-panel">
+      <h2>How to order</h2>
+      <ol><li>Enter your Free Fire Player UID and tap Lookup.</li><li>Choose a gift and add it to your cart.</li><li>Review your cart and follow the order instructions.</li></ol>
+      <p class="notice">Demo store: product availability, UID lookup and checkout are sample interactions. Connect an authorized supplier API and a secure order backend before accepting real orders or payments.</p>
+    </section>
+  </main>
+
+  <button class="help-fab" id="helpBtn" aria-label="Help">♧</button>
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-nav="store"><span>♙</span>Store</button>
+    <button class="nav-item" data-nav="wishlist"><span>♡</span>Wishlist</button>
+    <button class="nav-item" data-nav="categories"><span>▦</span>Categories</button>
+  </nav>
+  <footer>Made with ❤️ by <b>PLANEX</b></footer>
+
+  <div class="modal hidden" id="cartModal">
+    <div class="modal-card">
+      <div class="modal-head"><h2>Your Cart</h2><button class="close-btn" data-close="cartModal">×</button></div>
+      <div id="cartItems"></div>
+      <div class="cart-total"><span>Total</span><b id="cartTotal">৳0</b></div>
+      <button class="primary-btn" id="checkoutBtn">Continue to order</button>
+      <p class="small-note">Demo only — no payment is collected on this page.</p>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="orderModal">
+    <div class="modal-card">
+      <div class="modal-head"><h2>Order Request</h2><button class="close-btn" data-close="orderModal">×</button></div>
+      <p id="orderSummary" class="hint"></p>
+      <label class="field-label" for="orderUid">Player UID</label>
+      <input class="form-input" id="orderUid" placeholder="Enter Player UID">
+      <label class="field-label" for="orderContact">Contact (optional)</label>
+      <input class="form-input" id="orderContact" placeholder="Email or preferred contact">
+      <button class="primary-btn" id="submitOrder">Create demo order</button>
+      <p class="small-note">This creates a local demo confirmation only. No real order is sent.</p>
+      <div id="orderResult" class="order-result"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
