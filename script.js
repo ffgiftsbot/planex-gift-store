@@ -1,0 +1,32 @@
+const products = [
+ {id:1,name:"Hopping Trouble Bundle",gender:"Male",category:"Bundle",price:397,diamonds:1499,emoji:"🧥",prime:false,stock:8},
+ {id:2,name:"Bamboo Popstar Bundle",gender:"Female",category:"Bundle",price:397,diamonds:1499,emoji:"🐼",prime:false,stock:5},
+ {id:3,name:"Neon Musician Bundle",gender:"Female",category:"Bundle",price:420,diamonds:1499,emoji:"🎤",prime:false,stock:3},
+ {id:4,name:"Shadow Strike Bundle",gender:"Male",category:"Bundle",price:390,diamonds:1499,emoji:"🥷",prime:false,stock:0},
+ {id:5,name:"Football Star Bundle",gender:"Male",category:"Special",price:450,diamonds:3750,emoji:"⚽",prime:true,stock:0},
+ {id:6,name:"Reverse Penalty!",gender:"All",category:"Emote",price:180,diamonds:1500,emoji:"🕺",prime:true,stock:0},
+ {id:7,name:"Lightning Kick-Off",gender:"All",category:"Emote",price:180,diamonds:1500,emoji:"⚡",prime:true,stock:0},
+ {id:8,name:"Gooooal!",gender:"All",category:"Emote",price:180,diamonds:1500,emoji:"🏃",prime:true,stock:0}
+];
+let cart = JSON.parse(localStorage.getItem("planexCart")||"[]");
+let wishlist = JSON.parse(localStorage.getItem("planexWishlist")||"[]");
+let gender = "All";
+const $ = id => document.getElementById(id);
+function save(){localStorage.setItem("planexCart",JSON.stringify(cart));localStorage.setItem("planexWishlist",JSON.stringify(wishlist));}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function updateCartCount(){$("cartCount").textContent=cart.reduce((s,p)=>s+p.qty,0)}
+function card(p){const sold=p.stock<1;return `<article class="product-card"><div class="product-art"><span class="product-emoji">${p.emoji}</span><span class="gender-badge ${p.gender==="Female"?"female":""}">${p.gender==="Female"?"♀":"♂"}</span><span class="diamond-price">💎 ${p.diamonds}</span>${sold?'<div class="sold-overlay"><span>SOLD OUT</span></div>':""}</div><h3>${p.name}</h3><div class="product-bottom"><button class="buy-btn" ${sold?"disabled":""} data-buy="${p.id}">${sold?"Sold out":"🛒  "+p.price+" BDT"}</button><button class="remove-btn" title="Wishlist" data-wish="${p.id}">${wishlist.includes(p.id)?"♥":"♡"}</button></div></article>`}
+function render(){ $("primeGrid").innerHTML=products.filter(p=>p.prime).map(card).join("");let q=$("searchInput").value.toLowerCase();let cat=$("categoryFilter").value;let sort=$("sortFilter").value;let list=products.filter(p=>!p.prime && (gender==="All"||p.gender===gender||p.gender==="All") && (cat==="All"||p.category===cat) && p.name.toLowerCase().includes(q));if(sort==="low")list.sort((a,b)=>a.price-b.price);if(sort==="high")list.sort((a,b)=>b.price-a.price);if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));$("giftGrid").innerHTML=list.map(card).join("");$("emptyState").classList.toggle("hidden",list.length>0);updateCartCount();}
+function addToCart(id){let p=products.find(x=>x.id===id);if(!p||p.stock<1)return;let found=cart.find(x=>x.id===id);if(found)found.qty++;else cart.push({...p,qty:1});save();render();toast("Added to cart");}
+function showCart(){let box=$("cartItems");if(!cart.length)box.innerHTML='<p class="hint">Your cart is empty.</p>';else box.innerHTML=cart.map(p=>`<div class="cart-row"><span>${p.name} × ${p.qty}</span><span>৳${p.price*p.qty} <button class="remove-btn" data-remove="${p.id}">✕</button></span></div>`).join("");$("cartTotal").textContent="৳"+cart.reduce((s,p)=>s+p.price*p.qty,0);$("cartModal").classList.remove("hidden")}
+document.addEventListener("click",e=>{let b=e.target.closest("[data-buy]");if(b)addToCart(Number(b.dataset.buy));let w=e.target.closest("[data-wish]");if(w){let id=Number(w.dataset.wish);wishlist.includes(id)?wishlist=wishlist.filter(x=>x!==id):wishlist.push(id);save();render();toast("Wishlist updated")}let r=e.target.closest("[data-remove]");if(r){cart=cart.filter(p=>p.id!==Number(r.dataset.remove));save();showCart();render()}let c=e.target.closest("[data-close]");if(c)$(c.dataset.close).classList.add("hidden");let s=e.target.closest("[data-action='scroll']");if(s)$(s.dataset.target).scrollIntoView({behavior:"smooth"});let sub=e.target.closest("[data-action='subscribe']");if(sub){toast("Likes subscription demo selected");}});
+$("cartBtn").onclick=showCart;
+$("lookupBtn").onclick=()=>{let uid=$("playerUid").value.trim();if(!/^[0-9]{6,20}$/.test(uid)){ $("uidHint").textContent="Please enter a valid numeric Player UID (6–20 digits).";return;} $("uidHint").textContent="Demo mode: UID "+uid+" entered. Connect an authorized player lookup API to verify the account.";};
+$("searchInput").addEventListener("input",render);$("categoryFilter").onchange=render;$("sortFilter").onchange=render;
+$("genderTabs").onclick=e=>{let b=e.target.closest("[data-gender]");if(!b)return;gender=b.dataset.gender;document.querySelectorAll("#genderTabs button").forEach(x=>x.classList.toggle("active",x===b));render()};
+$("checkoutBtn").onclick=()=>{if(!cart.length){toast("Your cart is empty");return}$("cartModal").classList.add("hidden");$("orderSummary").textContent=cart.map(p=>p.name+" × "+p.qty).join(", ")+" — ৳"+cart.reduce((s,p)=>s+p.price*p.qty,0);$("orderUid").value=$("playerUid").value;$("orderResult").textContent="";$("orderModal").classList.remove("hidden")};
+$("submitOrder").onclick=()=>{let uid=$("orderUid").value.trim();if(!/^[0-9]{6,20}$/.test(uid)){toast("Enter a valid Player UID");return}$("orderResult").textContent="Demo request created for UID "+uid+". No real order or payment was sent.";cart=[];save();render();};
+$("helpBtn").onclick=()=>toast("Support chat can be connected here.");
+$("menuBtn").onclick=()=>toast("PLANEX Gift Store menu");
+document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));b.classList.add("active");if(b.dataset.nav==="categories")$("giftStore").scrollIntoView({behavior:"smooth"});else if(b.dataset.nav==="wishlist"){let items=products.filter(p=>wishlist.includes(p.id));$("giftGrid").innerHTML=items.length?items.map(card).join(""):'<p class="hint">Your wishlist is empty.</p>';$("giftStore").scrollIntoView({behavior:"smooth"})}else window.scrollTo({top:0,behavior:"smooth"})});
+render();
